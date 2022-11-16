@@ -70,17 +70,37 @@ namespace BankAccountSimulator.Logic.Services.UsersProvider
             bool isUserExist = IsUserExist();
             var userData = userToLogin;
 
-            if (isUserExist)
+            User user = _users.Single(u => u.login == userData.login && u.passwd == userData.passwd);
+            bool isUserHaveBalance = user.balance > 0;
+
+
+            if (isUserExist && isUserHaveBalance)
             {
-                User user = _users.Single(u => u.login == userData.login && u.passwd == userData.passwd);
+                Console.Clear();
+                Console.WriteLine($"saldo twojego konta wynosi: {user.balance} \n");
                 return user.balance;
+            }
+            else if (!isUserHaveBalance)
+            {
+                Console.WriteLine("nie posiadasz żadnych środków na koncie \n");
+                return 0;
             }
             else
             {
-                Console.WriteLine("Nie Znaleziono użykownika");
+                Console.WriteLine("Nie Znaleziono użykownika \n");
                 return 0;
             }
         }
+
+
+        public decimal DepostitMoney()
+        {
+            string userAmountOfMoney.
+            var userData = userToLogin;
+
+            userData.balance
+        }
+
 
     }
 }

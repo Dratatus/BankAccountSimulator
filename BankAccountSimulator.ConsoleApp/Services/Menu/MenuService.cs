@@ -29,6 +29,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
             int number = 1;
             if (isUserLogged)
             {
+                Console.WriteLine("");
                 foreach (var option in _optionsAfterLogin)
                 {
                     Console.WriteLine($"{number}. {option}");
@@ -49,13 +50,13 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
             if (isUserLogged)
             {
                 int optionCount = _optionsAfterLogin.Count;
-                int option = _consoleService.GetIntegerWithinRange("Wybierz opcję: ", 1, optionCount);
+                int option = _consoleService.GetIntegerWithinRange("\nWybierz opcję: ", 1, optionCount);
                 return option;
             }
             else
             {
                 int optionCount = _options.Count;
-                int option = _consoleService.GetIntegerWithinRange("Wybierz opcję: ", 1, optionCount);
+                int option = _consoleService.GetIntegerWithinRange("\nWybierz opcję: ", 1, optionCount);
                 return option;
             }
         }
