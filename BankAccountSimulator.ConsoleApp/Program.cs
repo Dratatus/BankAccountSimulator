@@ -30,11 +30,13 @@ namespace BankAccountSimulator.ConsoleApp
                     _userProvider.AddNewUser("Pomyślnie utworzono konto!");
 
                 }
-                
 
-                else if (option == 2)
+
+                else if (option == 1)
                 {
-                    Console.WriteLine("Program zakończony.. ");
+                    _userProvider.GetUserDataToLogin("podaj login: ", "podaj hasło: ");
+                    _userProvider.IsUserExist();
+
                     break;
                 }
 

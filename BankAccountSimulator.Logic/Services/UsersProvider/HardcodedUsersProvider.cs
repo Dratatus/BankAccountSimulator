@@ -4,17 +4,16 @@ namespace BankAccountSimulator.Logic.Services.UsersProvider
 {
     public class HardcodedUsersProvider : IUsersProviderService
     {
+        private User userToLogin = new User();
+
+
         private readonly List<User> _users = new List<User>
         {
-            new User {login = "admin", passwd = "1qaz", balance = 999999, AccountHistory = { ""} },
+            new User  {login = "admin", passwd = "1qaz", balance = 999999 }
         };
 
         public List<User> GetUsers()
         {
-            // Metoda ToList tworzy nową instancję listy. W ten sposób zwracasz INNĄ listę z tymi samymi danymi
-            // Jak ktoś pobierze sobie listę walut i doda do niej nową walutę to ona nie uwzględni się w tej liście,
-            // dlatego, że ToList stworzyło nową referencję
-
             var users = _users.ToList();
 
             return users;
@@ -39,61 +38,47 @@ namespace BankAccountSimulator.Logic.Services.UsersProvider
             Console.WriteLine(message);
         }
 
-        public User getUserData()
+        public User GetUserDataToLogin(string message = null, string message2 = null)
         {
-            Console.WriteLine("Podaj login");
+            Console.WriteLine(message);
             string userLogin = Console.ReadLine();
 
-            Console.WriteLine("Podaj hasło");
-            string userPsswd = Console.ReadLine();
-            
-        }
-
-        private Tuple<string, string> GetUserData(string message = null, string message2 = null)
-        {
-
-            Console.WriteLine(message);
-            string login = Console.ReadLine();
-
-
-
             Console.WriteLine(message2);
-            string passwd = Console.ReadLine();
+            string userPsswd = Console.ReadLine();
 
-            
+            userToLogin.login = userLogin;
+            userToLogin.passwd = userPsswd;
 
-
-            return Tuple.Create(login, passwd);
+            return userToLogin;
         }
 
         public bool IsUserExist()
         {
             var users = GetUsers();
 
-            var userData = GetUserData("Podaj login", "Podaj hasło");
+            var userData = userToLogin;
 
-            bool isUserExist = _users.Any(us => us.login == userData.Item1 && us.passwd == userData.Item2);
 
-            if (isUserExist)
-            {
-                return isUserExist;
-            }
-            else
-            {
-                Console.WriteLine("Nie Znaleziono użykownika");
-                return isUserExist;
-            }
+            bool isUserExist = _users.Any(us => us.login == userData.login && us.passwd == userData.passwd);
 
+            return isUserExist;
         }
 
         public decimal CheckUserBalance()
         {
             var users = GetUsers();
             bool isUserExist = IsUserExist();
+            var userData = userToLogin;
 
             if (isUserExist)
             {
-                decimal balance = _users.Single(b => b.balance == users)
+                User user = _users.Single(u => u.login == userData.login && u.passwd == userData.passwd);
+                return user.balance;
+            }
+            else
+            {
+                Console.WriteLine("Nie Znaleziono użykownika");
+                return 0;
             }
         }
 

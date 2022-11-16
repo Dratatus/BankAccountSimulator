@@ -6,8 +6,8 @@
 
         public string passwd { get; set; }
 
-        public decimal ?balance { get; set; }
+        public decimal balance { get; set; }
 
-        public List<string> AccountHistory { get; set; }
+        public List<string> AccountHistory = new List<string>();
     }
 }
