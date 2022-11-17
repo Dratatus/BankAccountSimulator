@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankAccountSimulator.ConsoleApp", "BankAccountSimulator.ConsoleApp\BankAccountSimulator.ConsoleApp.csproj", "{E1DBAC54-6928-4F04-BE55-D0C6B7D84933}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankAccountSimulator.ConsoleApp", "BankAccountSimulator.ConsoleApp\BankAccountSimulator.ConsoleApp.csproj", "{E1DBAC54-6928-4F04-BE55-D0C6B7D84933}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankAccountSimulator.Logic", "BankAccountSimulator.Logic\BankAccountSimulator.Logic.csproj", "{D9A8464A-3C22-4015-85F3-C9B8BEEA55AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankAccountSimulator.Logic", "BankAccountSimulator.Logic\BankAccountSimulator.Logic.csproj", "{D9A8464A-3C22-4015-85F3-C9B8BEEA55AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankAccountSimulator.Data", "BankAccountSimulator.Data\BankAccountSimulator.Data.csproj", "{67D19DDF-85A4-464F-91FA-1A43B2E9816B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D9A8464A-3C22-4015-85F3-C9B8BEEA55AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9A8464A-3C22-4015-85F3-C9B8BEEA55AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9A8464A-3C22-4015-85F3-C9B8BEEA55AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67D19DDF-85A4-464F-91FA-1A43B2E9816B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67D19DDF-85A4-464F-91FA-1A43B2E9816B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67D19DDF-85A4-464F-91FA-1A43B2E9816B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67D19DDF-85A4-464F-91FA-1A43B2E9816B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

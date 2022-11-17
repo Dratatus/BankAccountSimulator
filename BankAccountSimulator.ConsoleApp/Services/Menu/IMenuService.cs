@@ -5,5 +5,7 @@
         void DisplayOptions(bool isUserLogged);
 
         int GetOption(bool isUserLogged);
+
+        void DisplayError(string errorMessage);
     }
 }

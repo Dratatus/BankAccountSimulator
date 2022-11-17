@@ -1,8 +1,10 @@
 ﻿using BankAccountSimulator.ConsoleApp.Services.Consoles;
 using BankAccountSimulator.ConsoleApp.Services.Menu;
-using BankAccountSimulator.Logic.Services.UsersProvider;
+using BankAccountSimulator.Data.Repositories.Users;
+using BankAccountSimulator.Logic.Services.RulesOfCorrectnes;
+using BankAccountSimulator.Logic.Services.Users;
 using Ninject;
-using System.Threading.Tasks;
+using System;
 
 namespace BankAccountSimulator.ConsoleApp
 {
@@ -10,15 +12,19 @@ namespace BankAccountSimulator.ConsoleApp
     {
         private static readonly IKernel _kernel = new StandardKernel();
 
+        // WSZELKIE rzeczy i operacje typowe dla Twojego programu (wiedza biznesowa) czyli np... podaj login, podaj hasł, wpłać pieniądze
         private static IMenuService _menuService;
-        private static IUsersProviderService _userProvider;
-        private static IConsoleService _consoleService;
-        static void Main(string[] args)
+        private static IUserService _userService;
+
+        // Typowe operacje konsolowe (GetInt, GetString, itp... + jakaś walidacja, np GetIntFromRange(x, y) )
+        private static IConsoleService _consoleService; 
+        private static IRuleOfCorrectnesService _ruleOfCorrectnesProvider;
+
+        public static void Main(string[] args)
         {
             PerformDependencyInjectionBindings();
 
             bool isUserLogged = false;
-
 
             while (true)
             {
@@ -27,10 +33,28 @@ namespace BankAccountSimulator.ConsoleApp
 
                 if (option == 1)
                 {
-                    _userProvider.GetUserDataToLogin("\npodaj login: ", "\npodaj hasło: ");
-                    _userProvider.IsUserExist();
+                    bool userFound = false;
+                    string login = null;
 
-                    if (_userProvider.IsUserExist())
+                    // Nie sugeruj się tym co poniżej, to tylko przykład
+                    while (true)
+                    {
+                        try
+                        {
+                            login = _consoleService.GetString("\nPodaj login: ");
+                            string password = _consoleService.GetString("\nPodaj hasło: ");
+
+                            userFound = _userService.Login(login, password);
+
+                            break;
+                        }
+                        catch (Exception e)
+                        {
+                            _menuService.DisplayError(e.Message);
+                        }
+                    }
+
+                    if (userFound)
                     {
                         isUserLogged = true;
 
@@ -39,41 +63,47 @@ namespace BankAccountSimulator.ConsoleApp
 
                         if (optionAfterLogin == 3)
                         {
-                            _userProvider.CheckUserBalance();
+                            _userService.GetUserBalance(login);
+                        }
+                        else if (optionAfterLogin == 1)
+                        {
+                            //_consoleService.DepositMoney("\nPodaj ilość kwotę pieniędzy do wpłaty :", "Pomyślnie wpłacono ", "\nNie popranwe dane, Spróbuj ponownie! ");
                         }
                     }
                     else
                     {
                         Console.WriteLine("\nBłędne dane! \n");
                     }
-
                 }
                 else if (option == 2)
                 {
-                    _userProvider.AddNewUser("\nPomyślnie utworzono konto!\n");
+                    string userLogin = _consoleService.GetString("\nUtwórz login: ");
+                    string userPaswwd = _consoleService.GetString("\nUtwórz hasło: ");
+
+                    _userService.AddNewUser(userLogin, userPaswwd);
 
                 }
-
                 else if (option == 3)
                 {
                     Console.WriteLine("\nProgram zakończony.. ");
                     break;
                 }
-
             }
-
         }
 
         private static void PerformDependencyInjectionBindings()
         {
             _kernel.Bind<IMenuService>().To<MenuService>();
-            _kernel.Bind<IUsersProviderService>().To<HardcodedUsersProvider>();
             _kernel.Bind<IConsoleService>().To<ConsoleService>();
+            _kernel.Bind<IRuleOfCorrectnesService>().To<RuleOfCorrectnesService>();
+            _kernel.Bind<IUserService>().To<UserService>();
 
+            _kernel.Bind<IUserRepository>().To<UserRepository>();
 
             _menuService = _kernel.Get<IMenuService>();
-            _userProvider = _kernel.Get<IUsersProviderService>();
             _consoleService = _kernel.Get<IConsoleService>();
+            _ruleOfCorrectnesProvider = _kernel.Get<IRuleOfCorrectnesService>();
+            _userService = _kernel.Get<IUserService>();
         }
     }
 }
