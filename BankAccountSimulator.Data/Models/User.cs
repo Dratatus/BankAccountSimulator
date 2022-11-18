@@ -10,7 +10,7 @@ namespace BankAccountSimulator.Data.Models
 
         public decimal Balance { get; set; }
 
-        public AccountHistory AccountHistory { get; set; }
+        public AccountHistory accountHistory { get; set; }
 
         public User()
         {

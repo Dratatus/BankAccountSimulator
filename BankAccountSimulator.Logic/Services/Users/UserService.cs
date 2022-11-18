@@ -93,6 +93,7 @@ namespace BankAccountSimulator.Logic.Services.Users
 
         public decimal DepositMoney(string login, string amountOfMoney)
         {
+            string operationType = "deposit";
             var users = _userRepository.GetUsers();
 
             User loggedUser = users.Single(u => u.Username == login);
@@ -110,9 +111,10 @@ namespace BankAccountSimulator.Logic.Services.Users
                 }
             }
             string operationDate = GetOperationDate();
+            AddAccountHistory(operationType,login, "Dokonano wpłaty");
 
             loggedUser.Balance += ConvertedMoney;
-            loggedUser.AccountHistory.Operation.Add($"{operationDate}");
+            loggedUser.accountHistory.Operation.Add($"{operationDate}");
 
             return loggedUser.Balance;
         }
@@ -163,14 +165,14 @@ namespace BankAccountSimulator.Logic.Services.Users
 
             if (typeOperation == "deposit")
             {
-                loggedUser.AccountHistory.OperationDate = operationDate;
-                loggedUser.AccountHistory.Operation.Add(message);
+                loggedUser.accountHistory.OperationDate = operationDate;
+                loggedUser.accountHistory.Operation.Add(message);
 
             }
             else if (typeOperation == "withdraw")
             {
-                loggedUser.AccountHistory.OperationDate = operationDate;
-                loggedUser.AccountHistory.Operation.Add(message);
+                loggedUser.accountHistory.OperationDate = operationDate;
+                loggedUser.accountHistory.Operation.Add(message);
 
             }
         }

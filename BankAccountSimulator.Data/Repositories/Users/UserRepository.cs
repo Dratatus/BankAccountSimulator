@@ -1,6 +1,7 @@
 ﻿using BankAccountSimulator.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace BankAccountSimulator.Data.Repositories.Users
 {
@@ -8,7 +9,7 @@ namespace BankAccountSimulator.Data.Repositories.Users
     {
         private readonly List<User> _users = new List<User>
         {
-            new User { Username = "admin", Password = "1qaz", Balance = 100.00M }
+            new User { Username = "admin", Password = "1qaz", Balance = 100.00M, accountHistory = new AccountHistory { Operation = new List<string>(), OperationDate = " " }  }
         };
 
         public List<User> GetUsers()
