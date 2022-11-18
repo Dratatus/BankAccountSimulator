@@ -7,7 +7,7 @@ namespace BankAccountSimulator.Data.Repositories.Users
     {
         List<User> GetUsers();
 
-        bool UserExists(string login, string password);
+        bool UserExists(string login);
 
         void AddNew(User user);
     }

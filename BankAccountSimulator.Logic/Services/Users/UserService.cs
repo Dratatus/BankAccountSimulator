@@ -11,8 +11,6 @@ namespace BankAccountSimulator.Logic.Services.Users
         private readonly IUserRepository _userRepository;
         private readonly IRuleOfCorrectnesService _ruleOfCorrectnesService;
 
-        private User _loggedInUser;
-
         public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
@@ -22,72 +20,159 @@ namespace BankAccountSimulator.Logic.Services.Users
         {
             if (string.IsNullOrEmpty(username))
             {
-                throw new Exception("Nie podano loginu!");
+                throw new Exception("Nie podano loginu! ");
             }
 
-            if (string.IsNullOrEmpty(password))
+            else if (string.IsNullOrEmpty(password))
             {
-                throw new Exception("Nie podano hasła!");
+                throw new Exception("Nie podano hasła! ");
+            }
+            else if (password.Length < 4)
+            {
+                throw new Exception("Hasło musi mieć minimum 5 znaków! ");
+            }
+            else if (username.Length < 4)
+            {
+                throw new Exception("Login musi mieć minimum 5 znaków! ");
             }
 
-            // _loggedInUser = ...
-            return true; // lub false
+            return true;
         }
 
-        public bool UserExists(string username, string password)
+
+
+        public bool UserExists(string username)
         {
-            bool userExists = _userRepository.UserExists(username, password);
+            bool userExists = _userRepository.UserExists(username);
 
             return userExists;
         }
 
-        public decimal GetUserBalance(string login)
+        public decimal GetUserBalance(string username)
         {
-            // czy login istnieje w bazie
-            //if (user == null)
-            //{
-            //    // wyjątek
-            //}
 
             var users = _userRepository.GetUsers();
+            var user = users.Single(u => u.Username == username);
 
-            var user = users.Single(u => u.Login == login);
-
+            if (user == null)
+            {
+                throw new Exception($"Nie znaleziono użkownika o loginie {username}");
+            }
             return user.Balance;
         }
 
-        public void AddNewUser(string login, string password)
+        public bool AddNewUser(string login, string password)
         {
-            if (login == null)
+            if (login == null || login.Length < 4)
             {
-                // wyjątek
+                throw new Exception("nazwa użytkownika nie może mieć mniej niż 5 znaków! ");
             }
 
-            if (password == null)
+            if (password == null || password.Length < 4)
             {
-                // wyjątek
+                throw new Exception("hasło nie może mieć mniej niż 5 znaków! ");
             }
 
-            if (login.Length < 5)
-            {
-                // wyjątek
-            }
-
-            // TODO: naprawić, tylko login chyba powinien być unikalny
-            bool userExists = _userRepository.UserExists(login, password);
+            bool userExists = _userRepository.UserExists(login);
 
             if (userExists)
             {
-                throw new Exception($"Użytkownik o loginie {login} już istnieje");
+                throw new Exception($"Użytkownik o loginie {login} już istnieje! ");
             }
 
             var user = new User
             {
-                Login = login,
+                Username = login,
                 Password = password
             };
 
             _userRepository.AddNew(user);
+
+            return true;
+        }
+
+        public decimal DepositMoney(string login, string amountOfMoney)
+        {
+            var users = _userRepository.GetUsers();
+
+            User loggedUser = users.Single(u => u.Username == login);
+
+            bool isCorretType = decimal.TryParse(amountOfMoney, out decimal ConvertedMoney);
+            if (!isCorretType)
+            {
+                throw new Exception("Proszę podać kwotę do wpłaty z dokładnością do dwóch miejsc po przecinku! ");
+            }
+            else if (isCorretType)
+            {
+                if (ConvertedMoney <= 0)
+                {
+                    throw new Exception("Błędna kwota! ");
+                }
+            }
+            string operationDate = GetOperationDate();
+
+            loggedUser.Balance += ConvertedMoney;
+            loggedUser.AccountHistory.Operation.Add($"{operationDate}");
+
+            return loggedUser.Balance;
+        }
+
+        public decimal WithdrawMoney(string login, string aomuntOfMoney)
+        {
+            var users = _userRepository.GetUsers();
+
+            User loggedUser = users.Single(u => u.Username == login);
+
+            bool isCorretType = decimal.TryParse(aomuntOfMoney, out decimal convertedMoney);
+
+            if (!isCorretType)
+            {
+                throw new Exception("Niepoprawny format kwoty!  ");
+            }
+            else if (isCorretType)
+            {
+                if (convertedMoney <= 0)
+                {
+                    throw new Exception("Błędna kwota! ");
+                }
+                else if (convertedMoney > loggedUser.Balance)
+                {
+                    throw new Exception("Nie posiadasz wystarczających środków na koncie!");
+                }
+            }
+            loggedUser.Balance -= convertedMoney;
+
+            return loggedUser.Balance;
+
+        }
+        public string GetOperationDate()
+        {
+            string operationDate = DateTime.Now.ToString();
+
+            return operationDate;
+        }
+
+        public void AddAccountHistory(string typeOperation, string login, string message)
+        {
+            var users = _userRepository.GetUsers();
+            string operationDate = GetOperationDate();
+
+            User loggedUser = users.Single(u => u.Username == login);
+
+
+
+            if (typeOperation == "deposit")
+            {
+                loggedUser.AccountHistory.OperationDate = operationDate;
+                loggedUser.AccountHistory.Operation.Add(message);
+
+            }
+            else if (typeOperation == "withdraw")
+            {
+                loggedUser.AccountHistory.OperationDate = operationDate;
+                loggedUser.AccountHistory.Operation.Add(message);
+
+            }
         }
     }
 }

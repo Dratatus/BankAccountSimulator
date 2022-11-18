@@ -17,7 +17,7 @@ namespace BankAccountSimulator.ConsoleApp
         private static IUserService _userService;
 
         // Typowe operacje konsolowe (GetInt, GetString, itp... + jakaś walidacja, np GetIntFromRange(x, y) )
-        private static IConsoleService _consoleService; 
+        private static IConsoleService _consoleService;
         private static IRuleOfCorrectnesService _ruleOfCorrectnesProvider;
 
         public static void Main(string[] args)
@@ -56,31 +56,68 @@ namespace BankAccountSimulator.ConsoleApp
 
                     if (userFound)
                     {
-                        isUserLogged = true;
-
-                        _menuService.DisplayOptions(isUserLogged);
-                        int optionAfterLogin = _menuService.GetOption(isUserLogged);
-
-                        if (optionAfterLogin == 3)
+                        while (true)
                         {
-                            _userService.GetUserBalance(login);
+
+                            isUserLogged = true;
+
+                            _menuService.DisplayOptions(isUserLogged);
+                            int optionAfterLogin = _menuService.GetOption(isUserLogged);
+
+                            if (optionAfterLogin == 1)
+                            {
+                                try
+                                {
+                                    string valueToDeposit = _consoleService.GetString("Podaj kwotę wpłaty z dokładnością do dwóch miejsc po przecinku: ");
+                                    _userService.DepositMoney(login, valueToDeposit);
+                                    _menuService.DisplayDepositStatus(valueToDeposit);
+                                }
+                                catch (Exception e)
+                                {
+
+                                    _menuService.DisplayError(e.Message);
+                                }
+                            }
+                            else if (optionAfterLogin == 2)
+                            {
+                                try
+                                {
+                                    string valueToWithdraw = _consoleService.GetString("Podaj kwotę wpłaty z dokładnością do dwóch miejsc po przecinku: ");
+                                    _userService.WithdrawMoney(login, valueToWithdraw);
+                                    _menuService.DisplayWithdrawStatus(valueToWithdraw);
+                                }
+                                catch (Exception e)
+                                {
+
+                                    _menuService.DisplayError(e.Message);
+                                }
+                               
+                            }
+                            else if (optionAfterLogin == 3)
+                            {
+                                try
+                                {
+                                    decimal userBlance = _userService.GetUserBalance(login);
+                                    _menuService.DisplayBalance(userBlance);
+                                }
+                                catch (Exception e)
+                                {
+
+                                    _menuService.DisplayError(e.Message);
+                                }
+                                
+                            }
+
                         }
-                        else if (optionAfterLogin == 1)
-                        {
-                            //_consoleService.DepositMoney("\nPodaj ilość kwotę pieniędzy do wpłaty :", "Pomyślnie wpłacono ", "\nNie popranwe dane, Spróbuj ponownie! ");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nBłędne dane! \n");
                     }
                 }
                 else if (option == 2)
                 {
                     string userLogin = _consoleService.GetString("\nUtwórz login: ");
-                    string userPaswwd = _consoleService.GetString("\nUtwórz hasło: ");
+                    string userPassword = _consoleService.GetString("\nUtwórz hasło: ");
 
-                    _userService.AddNewUser(userLogin, userPaswwd);
+                    bool registerStatus = _userService.AddNewUser(userLogin, userPassword);
+                    _menuService.DisplayRegisterStatus(registerStatus);
 
                 }
                 else if (option == 3)

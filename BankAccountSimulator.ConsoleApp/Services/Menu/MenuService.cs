@@ -17,7 +17,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
 
         private readonly List<string> _optionsAfterLogin = new List<string>
         {
-            "Dodaj środki do konta",
+            "Wpłać środki na konto",
             "Wyciągnij środki z konta",
             "Wyświetl saldo konta",
             "Wyświetl historię konta",
@@ -52,21 +52,9 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
 
         public int GetOption(bool isUserLogged)
         {
-            //if (isUserLogged)
-            //{
-            //    int optionCount = _optionsAfterLogin.Count;
-            //    int option = _consoleService.GetIntegerWithinRange("\nWybierz opcję: ", 1, optionCount);
-            //    return option;
-            //}
-            //else
-            //{
-            //    int optionCount = _options.Count;
-            //    int option = _consoleService.GetIntegerWithinRange("\nWybierz opcję: ", 1, optionCount);
-            //    return option;
-            //}
-
             int optionCount = isUserLogged ? _optionsAfterLogin.Count : _options.Count;
             int option = _consoleService.GetIntegerWithinRange("\nWybierz opcję: ", 1, optionCount);
+
             return option;
         }
 
@@ -74,6 +62,33 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
         {
             Console.WriteLine("Wystąpił błąd");
             Console.WriteLine($"* {errorMessage} *");
+        }
+
+        public void DisplayBalance(decimal balance)
+        {
+            bool isBalancePositive = balance >= 0;
+
+            string message = isBalancePositive ? $"\nTwoje saldo wynosi {balance}\n" : $"\nNie posiadasz żadnych środków na koncie \n";
+
+            Console.WriteLine(message);
+        }
+
+        public void DisplayRegisterStatus(bool status)
+        {
+            bool isRegisterSucces = status == true;
+
+            string message = isRegisterSucces ? $"\n Pomyślnie zarejestrowano! " : $"\n Wystąpił błąd podczas rejstracji ";
+
+            Console.WriteLine(message);
+        }
+
+        public void DisplayDepositStatus(string value)
+        {
+            Console.WriteLine($"Pomyślnie dodano do salda kwotę: {value}");
+        }
+        public void DisplayWithdrawStatus(string value)
+        {
+            Console.WriteLine($"Pomyślnie wypłacono z konta kwotę: {value}");
         }
 
     }

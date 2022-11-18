@@ -8,7 +8,7 @@ namespace BankAccountSimulator.Data.Repositories.Users
     {
         private readonly List<User> _users = new List<User>
         {
-            new User { Login = "admin", Password = "1qaz", Balance = 999999 }
+            new User { Username = "admin", Password = "1qaz", Balance = 100.00M }
         };
 
         public List<User> GetUsers()
@@ -16,9 +16,9 @@ namespace BankAccountSimulator.Data.Repositories.Users
             return _users.ToList();
         }
 
-        public bool UserExists(string login, string passwd)
+        public bool UserExists(string login)
         {
-            bool isUserExist = _users.Any(us => us.Login == login && us.Password == passwd);
+            bool isUserExist = _users.Any(us => us.Username == login);
 
             return isUserExist;
         }

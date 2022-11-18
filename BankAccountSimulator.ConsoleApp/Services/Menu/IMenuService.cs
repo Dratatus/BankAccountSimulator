@@ -7,5 +7,9 @@
         int GetOption(bool isUserLogged);
 
         void DisplayError(string errorMessage);
+        void DisplayBalance(decimal balance);
+        void DisplayRegisterStatus(bool status);
+        void DisplayDepositStatus(string balance);
+        void DisplayWithdrawStatus(string value);
     }
 }
