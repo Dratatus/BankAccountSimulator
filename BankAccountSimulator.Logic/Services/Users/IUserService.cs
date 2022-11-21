@@ -1,4 +1,5 @@
 ﻿using BankAccountSimulator.Data.Models;
+using System.Collections.Generic;
 
 namespace BankAccountSimulator.Logic.Services.Users
 {
@@ -11,9 +12,15 @@ namespace BankAccountSimulator.Logic.Services.Users
         decimal GetUserBalance(string login);
 
         bool AddNewUser(string login, string password);
-        decimal DepositMoney(string login, string userAmountOfMoney);
-        decimal WithdrawMoney(string login, string aomuntOfMoney);
+
         string GetOperationDate();
+
         void AddAccountHistory(string typeOperation, string login, string message);
+
+        string GetAccountHistoryOperationDate(string username);
+
+        List<string> GetAccountHistory(string username);
+        decimal DepositMoney(string login, string amountOfMoney, string currency);
+        decimal WithdrawMoney(string login, string aomuntOfMoney, string currency);
     }
 }

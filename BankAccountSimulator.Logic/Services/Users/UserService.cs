@@ -1,23 +1,32 @@
 ﻿using BankAccountSimulator.Data.Models;
+using BankAccountSimulator.Data.Models.Currencies;
+using BankAccountSimulator.Data.Repositories.Currencies;
 using BankAccountSimulator.Data.Repositories.Users;
+using BankAccountSimulator.Logic.Services.ExchangeRates;
 using BankAccountSimulator.Logic.Services.RulesOfCorrectnes;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BankAccountSimulator.Logic.Services.Users
 {
     public class UserService : IUserService
     {
+        private readonly ICurrencyRepository _currencyRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRuleOfCorrectnesService _ruleOfCorrectnesService;
-
-        public UserService(IUserRepository userRepository)
+        private readonly IExchangeRatesService _exchangeRatesService;
+        public UserService(IUserRepository userRepository, ICurrencyRepository currencyRepository, IExchangeRatesService exchangeRatesService)
         {
+            _currencyRepository = currencyRepository;
             _userRepository = userRepository;
+            _exchangeRatesService = exchangeRatesService;
         }
 
         public bool Login(string username, string password)
         {
+            bool userExist = _userRepository.UserExists(username);
+
             if (string.IsNullOrEmpty(username))
             {
                 throw new Exception("Nie podano loginu! ");
@@ -35,11 +44,14 @@ namespace BankAccountSimulator.Logic.Services.Users
             {
                 throw new Exception("Login musi mieć minimum 5 znaków! ");
             }
+            else if (!userExist)
+            {
+                throw new Exception("Nie znaleziono użytokownika ");
+            }
+            
 
             return true;
         }
-
-
 
         public bool UserExists(string username)
         {
@@ -50,25 +62,25 @@ namespace BankAccountSimulator.Logic.Services.Users
 
         public decimal GetUserBalance(string username)
         {
-
             var users = _userRepository.GetUsers();
-            var user = users.Single(u => u.Username == username);
+            var user = _userRepository.GetUserByLogin(username);
 
             if (user == null)
             {
                 throw new Exception($"Nie znaleziono użkownika o loginie {username}");
             }
+
             return user.Balance;
         }
 
         public bool AddNewUser(string login, string password)
         {
-            if (login == null || login.Length < 4)
+            if (login == null || login.Length <= 4)
             {
                 throw new Exception("nazwa użytkownika nie może mieć mniej niż 5 znaków! ");
             }
 
-            if (password == null || password.Length < 4)
+            if (password == null || password.Length <= 4)
             {
                 throw new Exception("hasło nie może mieć mniej niż 5 znaków! ");
             }
@@ -83,7 +95,10 @@ namespace BankAccountSimulator.Logic.Services.Users
             var user = new User
             {
                 Username = login,
-                Password = password
+                Password = password,
+                AccountHistory_ = new AccountHistory { Operation = new List<string>(), OperationDate = "" },
+                Currency_ = new Currency { Code = "PLN" }
+                
             };
 
             _userRepository.AddNew(user);
@@ -91,39 +106,45 @@ namespace BankAccountSimulator.Logic.Services.Users
             return true;
         }
 
-        public decimal DepositMoney(string login, string amountOfMoney)
+        public decimal DepositMoney(string login, string amountOfMoney, string currency)
         {
             string operationType = "deposit";
-            var users = _userRepository.GetUsers();
 
-            User loggedUser = users.Single(u => u.Username == login);
+            var loggedUser = _userRepository.GetUserByLogin(login);
+            bool isCurrencyExist = _exchangeRatesService.CurrencyExists(currency);
+            string accountCurrency = _exchangeRatesService.GetUserActualCurrencyAccountType(login);
 
-            bool isCorretType = decimal.TryParse(amountOfMoney, out decimal ConvertedMoney);
+            bool isCorretType = decimal.TryParse(amountOfMoney, out decimal convertedMoney);
+
             if (!isCorretType)
             {
-                throw new Exception("Proszę podać kwotę do wpłaty z dokładnością do dwóch miejsc po przecinku! ");
+                throw new Exception("Niepoprawny typ danych! ");
             }
             else if (isCorretType)
             {
-                if (ConvertedMoney <= 0)
+                if (convertedMoney <= 0)
                 {
                     throw new Exception("Błędna kwota! ");
                 }
             }
-            string operationDate = GetOperationDate();
-            AddAccountHistory(operationType,login, "Dokonano wpłaty");
+            if (!isCurrencyExist)
+            {
+                throw new Exception("Błędna waluta!");
+            }
+            _exchangeRatesService.ConvertMoneyToBalance(login, accountCurrency, currency,operationType, convertedMoney);
 
-            loggedUser.Balance += ConvertedMoney;
-            loggedUser.accountHistory.Operation.Add($"{operationDate}");
+            AddAccountHistory(operationType, login, $"Dokonano wypłaty - kwota: {convertedMoney} {currency.ToUpper()}");
 
             return loggedUser.Balance;
         }
 
-        public decimal WithdrawMoney(string login, string aomuntOfMoney)
+        public decimal WithdrawMoney(string login, string aomuntOfMoney, string currency)
         {
-            var users = _userRepository.GetUsers();
+            string operationType = "withdraw";
 
-            User loggedUser = users.Single(u => u.Username == login);
+            var loggedUser = _userRepository.GetUserByLogin(login);
+            bool isCurrencyExist = _exchangeRatesService.CurrencyExists(currency);
+            string accountCurrency = _exchangeRatesService.GetUserActualCurrencyAccountType(login);
 
             bool isCorretType = decimal.TryParse(aomuntOfMoney, out decimal convertedMoney);
 
@@ -142,10 +163,15 @@ namespace BankAccountSimulator.Logic.Services.Users
                     throw new Exception("Nie posiadasz wystarczających środków na koncie!");
                 }
             }
-            loggedUser.Balance -= convertedMoney;
+            if (!isCurrencyExist)
+            {
+                throw new Exception("Błędna waluta! ");
+            }
+            _exchangeRatesService.ConvertMoneyToBalance(login, accountCurrency, currency, operationType, convertedMoney);
+
+            AddAccountHistory(operationType, login, $"Dokonano wypłaty - kwota: {convertedMoney} {currency.ToUpper()}");
 
             return loggedUser.Balance;
-
         }
         public string GetOperationDate()
         {
@@ -154,27 +180,50 @@ namespace BankAccountSimulator.Logic.Services.Users
             return operationDate;
         }
 
-        public void AddAccountHistory(string typeOperation, string login, string message)
+        public void AddAccountHistory(string typeOperation, string username, string message)
         {
             var users = _userRepository.GetUsers();
             string operationDate = GetOperationDate();
 
-            User loggedUser = users.Single(u => u.Username == login);
-
-
+            var loggedUser = _userRepository.GetUserByLogin(username);
 
             if (typeOperation == "deposit")
             {
-                loggedUser.accountHistory.OperationDate = operationDate;
-                loggedUser.accountHistory.Operation.Add(message);
+                loggedUser.AccountHistory_.OperationDate = operationDate;
+                loggedUser.AccountHistory_.Operation.Add(message);
 
             }
             else if (typeOperation == "withdraw")
             {
-                loggedUser.accountHistory.OperationDate = operationDate;
-                loggedUser.accountHistory.Operation.Add(message);
+                loggedUser.AccountHistory_.OperationDate = operationDate;
+                loggedUser.AccountHistory_.Operation.Add(message);
 
             }
         }
+
+        public string GetAccountHistoryOperationDate(string username)
+        {
+            var users = _userRepository.GetUsers();
+            var loggedUser = _userRepository.GetUserByLogin(username);
+
+            return loggedUser.AccountHistory_.OperationDate;
+        }
+        public List<string> GetAccountHistory(string username)
+        {
+            var users = _userRepository.GetUsers();
+            User loggedUser = _userRepository.GetUserByLogin(username); ;
+
+            bool isUserHvaeAccountHistory = string.IsNullOrEmpty(loggedUser.AccountHistory_.OperationDate) || loggedUser.AccountHistory_.Operation == null;
+
+            if (isUserHvaeAccountHistory)
+            {
+                throw new Exception("Historia konta jest pusta!");
+            }
+
+            return loggedUser.AccountHistory_.Operation;
+        }
+
+
+
     }
 }

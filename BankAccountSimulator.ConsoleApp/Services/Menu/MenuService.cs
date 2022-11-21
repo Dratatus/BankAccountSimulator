@@ -1,4 +1,5 @@
 ﻿using BankAccountSimulator.ConsoleApp.Services.Consoles;
+using BankAccountSimulator.Data.Repositories.Currencies;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +22,8 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
             "Wyciągnij środki z konta",
             "Wyświetl saldo konta",
             "Wyświetl historię konta",
+            "Przewalutuj swoje saldo",
+            "Wyloguj"
         };
 
         public MenuService(IConsoleService consoleService)
@@ -60,35 +63,51 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
 
         public void DisplayError(string errorMessage)
         {
-            Console.WriteLine("Wystąpił błąd");
-            Console.WriteLine($"* {errorMessage} *");
+            Console.Clear();
+            Console.WriteLine("Wystąpił błąd: ");
+            Console.Write($"* {errorMessage} *\n");
         }
 
-        public void DisplayBalance(decimal balance)
+        public void DisplayBalance(decimal balance, string currency)
         {
+            Console.Clear();
             bool isBalancePositive = balance >= 0;
 
-            string message = isBalancePositive ? $"\nTwoje saldo wynosi {balance}\n" : $"\nNie posiadasz żadnych środków na koncie \n";
+            string message = isBalancePositive ? $"\nTwoje saldo wynosi {balance} {currency}\n" : $"\nNie posiadasz żadnych środków na koncie \n";
 
             Console.WriteLine(message);
         }
 
-        public void DisplayRegisterStatus(bool status)
+        public void DisplayRegisterStatus(bool status, string message, string errorMessage)
         {
+            Console.Clear();
             bool isRegisterSucces = status == true;
 
-            string message = isRegisterSucces ? $"\n Pomyślnie zarejestrowano! " : $"\n Wystąpił błąd podczas rejstracji ";
+            string messageToDisplay = isRegisterSucces ? $"\n {message} \n" : $"\n {errorMessage}\n ";
 
-            Console.WriteLine(message);
+            Console.WriteLine(messageToDisplay);
         }
 
-        public void DisplayDepositStatus(string value)
+        public void DisplayDepositStatus(string value,string message, string currency)
         {
-            Console.WriteLine($"Pomyślnie dodano do salda kwotę: {value}");
+            Console.Clear();
+            Console.WriteLine($"{message} {value} {currency.ToUpper()}");
         }
-        public void DisplayWithdrawStatus(string value)
+        public void DisplayWithdrawStatus(string value, string message, string currency)
         {
-            Console.WriteLine($"Pomyślnie wypłacono z konta kwotę: {value}");
+            Console.Clear();
+            Console.WriteLine($" {message} {value} {currency.ToUpper()}");
+        }
+
+        public void DisplayAccountHistory(List<string> operations, string operationDate)
+        {
+            Console.Clear();
+            Console.WriteLine("Historia konta:");
+
+            foreach (var operation in operations)
+            {
+                Console.WriteLine($"{operationDate} - {operation}");
+            }
         }
 
     }

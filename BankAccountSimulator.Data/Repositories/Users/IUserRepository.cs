@@ -10,5 +10,7 @@ namespace BankAccountSimulator.Data.Repositories.Users
         bool UserExists(string login);
 
         void AddNew(User user);
+        void AddConvertedBalance(User user, decimal newBalance);
+        User GetUserByLogin(string username);
     }
 }

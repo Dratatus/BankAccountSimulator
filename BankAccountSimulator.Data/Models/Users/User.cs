@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BankAccountSimulator.Data.Models.Currencies;
 
 namespace BankAccountSimulator.Data.Models
 {
@@ -10,7 +11,9 @@ namespace BankAccountSimulator.Data.Models
 
         public decimal Balance { get; set; }
 
-        public AccountHistory accountHistory { get; set; }
+        public AccountHistory AccountHistory_ { get; set; }
+
+        public Currency Currency_ { get; set; }
 
         public User()
         {

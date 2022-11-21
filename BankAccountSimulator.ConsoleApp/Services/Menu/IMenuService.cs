@@ -1,4 +1,6 @@
-﻿namespace BankAccountSimulator.ConsoleApp.Services.Menu
+﻿using System.Collections.Generic;
+
+namespace BankAccountSimulator.ConsoleApp.Services.Menu
 {
     public interface IMenuService
     {
@@ -7,9 +9,15 @@
         int GetOption(bool isUserLogged);
 
         void DisplayError(string errorMessage);
-        void DisplayBalance(decimal balance);
-        void DisplayRegisterStatus(bool status);
-        void DisplayDepositStatus(string balance);
-        void DisplayWithdrawStatus(string value);
+
+        void DisplayBalance(decimal balance, string currency);
+
+        void DisplayAccountHistory(List<string> operations, string operationDate);
+
+        void DisplayRegisterStatus(bool status, string message, string errorMessage);
+
+        void DisplayDepositStatus(string value, string message, string currency);
+
+        void DisplayWithdrawStatus(string value, string message, string currency);
     }
 }
