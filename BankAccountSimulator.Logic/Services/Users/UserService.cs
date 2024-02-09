@@ -5,7 +5,6 @@ using BankAccountSimulator.Data.Repositories.Users;
 using BankAccountSimulator.Logic.Services.ExchangeRates;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BankAccountSimulator.Logic.Services.Users
 {
@@ -23,7 +22,7 @@ namespace BankAccountSimulator.Logic.Services.Users
 
         public bool Login(string username, string password)
         {
-            bool userExist = _userRepository.UserExists(username);
+            bool userExist = _userRepository.UserExists(username, password);
 
             if (string.IsNullOrEmpty(username))
             {
@@ -34,28 +33,12 @@ namespace BankAccountSimulator.Logic.Services.Users
             {
                 throw new Exception("Password not provided! ");
             }
-            else if (password.Length < 4)
-            {
-                throw new Exception("Password must be at least 5 characters! ");
-            }
-            else if (username.Length < 4)
-            {
-                throw new Exception("Username must be at least 5 characters! ");
-            }
             else if (!userExist)
             {
                 throw new Exception("User not found ");
             }
 
-
             return true;
-        }
-
-        public bool UserExists(string username)
-        {
-            bool userExists = _userRepository.UserExists(username);
-
-            return userExists;
         }
 
         public decimal GetUserBalance(string username)
@@ -83,7 +66,7 @@ namespace BankAccountSimulator.Logic.Services.Users
                 throw new Exception("Password cannot be less than 5 characters! ");
             }
 
-            bool userExists = _userRepository.UserExists(login);
+            bool userExists = _userRepository.UserExists(login, password);
 
             if (userExists)
             {
@@ -220,8 +203,5 @@ namespace BankAccountSimulator.Logic.Services.Users
 
             return loggedUser.AccountHistory_.Operation;
         }
-
-
-
     }
 }

@@ -6,7 +6,7 @@ namespace BankAccountSimulator.Data.Repositories.Users
     public interface IUserRepository
     {
         List<User> GetUsers();
-        bool UserExists(string login);
+        bool UserExists(string login, string password);
         void AddNew(User user);
         void AddConvertedBalance(User user, decimal newBalance);
         User GetUserByLogin(string username);

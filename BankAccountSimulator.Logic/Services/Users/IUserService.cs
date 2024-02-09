@@ -6,8 +6,6 @@ namespace BankAccountSimulator.Logic.Services.Users
     {
         bool Login(string username, string password);
 
-        bool UserExists(string username);
-
         decimal GetUserBalance(string login);
 
         bool AddNewUser(string login, string password);

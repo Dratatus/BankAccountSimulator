@@ -14,7 +14,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
 
         void DisplayAccountHistory(List<string> operations, string operationDate);
 
-        void DisplayRegisterStatus(bool status, string message, string errorMessage);
+        void DisplayLoginStatus(bool status, string message, string errorMessage);
 
         void DisplayDepositStatus(string value, string message, string currency);
 

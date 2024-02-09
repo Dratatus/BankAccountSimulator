@@ -16,7 +16,6 @@ namespace BankAccountSimulator.Data.Repositories.Currencies
 
         public  List<Currency> GetCurrencies()
         {
-
             var currencies = _currencies.ToList();
 
             return currencies;

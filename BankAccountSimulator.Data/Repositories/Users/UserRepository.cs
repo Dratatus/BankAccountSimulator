@@ -18,9 +18,9 @@ namespace BankAccountSimulator.Data.Repositories.Users
             return _users.ToList();
         }
 
-        public bool UserExists(string login)
+        public bool UserExists(string login, string password)
         {
-            bool isUserExist = _users.Any(us => us.Username == login);
+            bool isUserExist = _users.Any(u => u.Username == login && u.Password == password);
 
             return isUserExist;
         }

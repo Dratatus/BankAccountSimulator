@@ -7,6 +7,7 @@ using BankAccountSimulator.Logic.Services.Users;
 using Ninject;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace BankAccountSimulator.ConsoleApp
 {
@@ -43,11 +44,13 @@ namespace BankAccountSimulator.ConsoleApp
                             string password = _consoleService.GetString("\nEnter password: ");
 
                             userFound = _userService.Login(login, password);
+                            _menuService.DisplayLoginStatus(userFound, "Succesfully logged in! ", "An error occured");
                             break;
                         }
                         catch (Exception e)
                         {
                             _menuService.DisplayError(e.Message);
+                            break;
                         }
                     }
 
@@ -154,7 +157,7 @@ namespace BankAccountSimulator.ConsoleApp
                             string userPassword = _consoleService.GetString("\nCreate password ");
 
                             bool registerStatus = _userService.AddNewUser(userLogin, userPassword);
-                            _menuService.DisplayRegisterStatus(registerStatus, "Succesfully registerd! ", "An error occured");
+                            _menuService.DisplayLoginStatus(registerStatus, "Succesfully registerd! ", "An error occured");
                         }
 
                         catch (Exception e)

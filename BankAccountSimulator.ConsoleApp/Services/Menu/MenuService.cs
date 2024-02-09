@@ -1,6 +1,7 @@
 ﻿using BankAccountSimulator.ConsoleApp.Services.Consoles;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace BankAccountSimulator.ConsoleApp.Services.Menu
 {
@@ -32,6 +33,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
 
         public void DisplayOptions(bool isUserLogged)
         {
+
             int number = 1;
             if (isUserLogged)
             {
@@ -56,6 +58,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
         {
             int optionCount = isUserLogged ? _optionsAfterLogin.Count : _options.Count;
             int option = _consoleService.GetIntegerWithinRange("\nChoose option: ", 1, optionCount);
+            Console.Clear();
 
             return option;
         }
@@ -64,7 +67,9 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
         {
             Console.Clear();
             Console.WriteLine("An error occured: ");
-            Console.Write($"* {errorMessage} *\n");
+            Console.Write($"* {errorMessage} *\n\n");
+            Thread.Sleep(3000);
+            Console.Clear();
         }
 
         public void DisplayBalance(decimal balance, string currency)
@@ -76,7 +81,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
             Console.WriteLine(message);
         }
 
-        public void DisplayRegisterStatus(bool status, string message, string errorMessage)
+        public void DisplayLoginStatus(bool status, string message, string errorMessage)
         {
             Console.Clear();
             bool isRegisterSucces = status == true;
@@ -84,17 +89,23 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
             string messageToDisplay = isRegisterSucces ? $"\n {message} \n" : $"\n {errorMessage}\n ";
 
             Console.WriteLine(messageToDisplay);
-        }
-
+            Thread.Sleep(3000);
+            Console.Clear();
+        }   
+        
         public void DisplayDepositStatus(string value, string message, string currency)
         {
             Console.Clear();
             Console.WriteLine($"{message} {value} {currency.ToUpper()}");
+            Thread.Sleep(3000);
+            Console.Clear();
         }
         public void DisplayWithdrawStatus(string value, string message, string currency)
         {
             Console.Clear();
             Console.WriteLine($" {message} {value} {currency.ToUpper()}");
+            Thread.Sleep(3000);
+            Console.Clear();
         }
 
         public void DisplayAccountHistory(List<string> operations, string operationDate)
@@ -104,7 +115,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
 
             foreach (var operation in operations)
             {
-                Console.WriteLine($"{operationDate} - {operation}");
+                Console.WriteLine($"{operationDate} -{operation}");
             }
         }
 
