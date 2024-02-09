@@ -22,6 +22,7 @@ Console project simulating Bank Account
 
 # Errors
 -  The application includes error handling measures in case the user enters data that does not match the expected input.
+  
 ![user_not_found](https://github.com/BugLurker404/BankAccountSimulator/assets/92109490/0fd54bb4-5f5e-4629-88e5-a57c1ffc8889) 
 
 ![funds_error](https://github.com/BugLurker404/BankAccountSimulator/assets/92109490/5aad8596-e3b5-427f-b812-b154b7f60a46)
