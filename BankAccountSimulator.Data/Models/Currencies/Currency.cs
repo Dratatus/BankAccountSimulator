@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BankAccountSimulator.Data.Models.Currencies
+﻿namespace BankAccountSimulator.Data.Models.Currencies
 {
     public class Currency
     {

@@ -2,7 +2,6 @@
 using BankAccountSimulator.Data.Models.Currencies;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 
 namespace BankAccountSimulator.Data.Repositories.Users
 {

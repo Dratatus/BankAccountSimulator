@@ -1,11 +1,9 @@
-﻿using BankAccountSimulator.Data.Models;
-using BankAccountSimulator.Data.Models.Currencies;
+﻿using BankAccountSimulator.Data.Models.Currencies;
 using BankAccountSimulator.Data.Repositories.Currencies;
 using BankAccountSimulator.Data.Repositories.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 
 namespace BankAccountSimulator.Logic.Services.ExchangeRates
 {
@@ -106,11 +104,11 @@ namespace BankAccountSimulator.Logic.Services.ExchangeRates
 
             if (string.IsNullOrEmpty(currencyToGet))
             {
-                throw new Exception("Nie podano waluty!");
+                throw new Exception("You must provide value! ");
             }
             else if (!isCurrencyExist)
             {
-                throw new Exception("Błędna waluta! ");
+                throw new Exception("Incorrect currency! ");
             }
 
             var exchangeRate = _exchangeRates.Single(er => er.BaseCurrency.Code == baseCurrency.ToUpper() && er.CurrencyToGet.Code == currencyToGet.ToUpper());
@@ -145,11 +143,9 @@ namespace BankAccountSimulator.Logic.Services.ExchangeRates
                 }
                 else
                 {
-                    throw new Exception("Nie posiadasz wystarczających środków na koncie! ");
+                    throw new Exception("You have no funds in your account! ");
                 }
             }
-
-
         }
 
         public string GetUserActualCurrencyAccountType(string username)

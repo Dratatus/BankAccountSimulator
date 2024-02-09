@@ -1,6 +1,4 @@
-﻿using BankAccountSimulator.Data.Models.Currencies;
-
-namespace BankAccountSimulator.Logic.Services.ExchangeRates
+﻿namespace BankAccountSimulator.Logic.Services.ExchangeRates
 {
     public interface IExchangeRatesService
     {
@@ -11,6 +9,5 @@ namespace BankAccountSimulator.Logic.Services.ExchangeRates
         decimal GetExchangeRate(string currencyToPurchase, string currencyToSell);
         string GetUserActualCurrencyAccountType(string username);
         void SetUserBalance(string username, string baseCurrency, string currencyToGet);
-
     }
 }

@@ -1,5 +1,4 @@
-﻿using BankAccountSimulator.Data.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BankAccountSimulator.Logic.Services.Users
 {

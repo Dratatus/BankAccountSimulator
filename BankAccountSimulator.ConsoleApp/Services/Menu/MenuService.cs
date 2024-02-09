@@ -1,5 +1,4 @@
 ﻿using BankAccountSimulator.ConsoleApp.Services.Consoles;
-using BankAccountSimulator.Data.Repositories.Currencies;
 using System;
 using System.Collections.Generic;
 
@@ -11,19 +10,19 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
 
         private readonly List<string> _options = new List<string>
         {
-            "Zaloguj się",
-            "Utwórz nowe konto",
-            "Zakończ program"
+            "Login",
+            "Create new Account",
+            "Exit "
         };
 
         private readonly List<string> _optionsAfterLogin = new List<string>
         {
-            "Wpłać środki na konto",
-            "Wyciągnij środki z konta",
-            "Wyświetl saldo konta",
-            "Wyświetl historię konta",
-            "Przewalutuj swoje saldo",
-            "Wyloguj"
+            "Deposit funds into the account",
+            "Withdraw funds from the account",
+            "Display account balance",
+            "Display account history",
+             "Convert your balance",
+            "Log out"
         };
 
         public MenuService(IConsoleService consoleService)
@@ -56,7 +55,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
         public int GetOption(bool isUserLogged)
         {
             int optionCount = isUserLogged ? _optionsAfterLogin.Count : _options.Count;
-            int option = _consoleService.GetIntegerWithinRange("\nWybierz opcję: ", 1, optionCount);
+            int option = _consoleService.GetIntegerWithinRange("\nChoose option: ", 1, optionCount);
 
             return option;
         }
@@ -64,17 +63,16 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
         public void DisplayError(string errorMessage)
         {
             Console.Clear();
-            Console.WriteLine("Wystąpił błąd: ");
+            Console.WriteLine("An error occured: ");
             Console.Write($"* {errorMessage} *\n");
         }
 
         public void DisplayBalance(decimal balance, string currency)
         {
             Console.Clear();
+
             bool isBalancePositive = balance >= 0;
-
-            string message = isBalancePositive ? $"\nTwoje saldo wynosi {balance} {currency}\n" : $"\nNie posiadasz żadnych środków na koncie \n";
-
+            string message = isBalancePositive ? $"\nYour balance is {balance} {currency}\n" : $"\nYou have no funds in your account \n";
             Console.WriteLine(message);
         }
 
@@ -88,7 +86,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
             Console.WriteLine(messageToDisplay);
         }
 
-        public void DisplayDepositStatus(string value,string message, string currency)
+        public void DisplayDepositStatus(string value, string message, string currency)
         {
             Console.Clear();
             Console.WriteLine($"{message} {value} {currency.ToUpper()}");
@@ -102,7 +100,7 @@ namespace BankAccountSimulator.ConsoleApp.Services.Menu
         public void DisplayAccountHistory(List<string> operations, string operationDate)
         {
             Console.Clear();
-            Console.WriteLine("Historia konta:");
+            Console.WriteLine("Account history:");
 
             foreach (var operation in operations)
             {

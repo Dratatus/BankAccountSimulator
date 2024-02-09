@@ -1,6 +1,4 @@
-﻿using BankAccountSimulator.Data.Models;
-using BankAccountSimulator.Logic.Services.Users;
-using System;
+﻿using System;
 
 namespace BankAccountSimulator.ConsoleApp.Services.Consoles
 {

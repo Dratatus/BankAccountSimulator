@@ -1,7 +1,6 @@
 ﻿using BankAccountSimulator.Data.Models.Currencies;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace BankAccountSimulator.Data.Repositories.Currencies
 {
@@ -11,7 +10,7 @@ namespace BankAccountSimulator.Data.Repositories.Currencies
         {
             new Currency { Name = "złoty", Code = "PLN", Symbol = "zł"},
             new Currency { Name = "dolar", Code = "USD", Symbol = "$"},
-            new Currency { Name = "Brytyjski funt szterling", Code = "GBP", Symbol = "£"},
+            new Currency { Name = "British funt szterling", Code = "GBP", Symbol = "£"},
             new Currency { Name = "euro", Code = "EUR", Symbol = "€"}
         };
 

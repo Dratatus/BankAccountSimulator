@@ -3,7 +3,6 @@ using BankAccountSimulator.ConsoleApp.Services.Menu;
 using BankAccountSimulator.Data.Repositories.Currencies;
 using BankAccountSimulator.Data.Repositories.Users;
 using BankAccountSimulator.Logic.Services.ExchangeRates;
-using BankAccountSimulator.Logic.Services.RulesOfCorrectnes;
 using BankAccountSimulator.Logic.Services.Users;
 using Ninject;
 using System;
@@ -18,7 +17,6 @@ namespace BankAccountSimulator.ConsoleApp
         private static IMenuService _menuService;
         private static IUserService _userService;
         private static IConsoleService _consoleService;
-        private static IRuleOfCorrectnesService _ruleOfCorrectnesProvider;
         private static IExchangeRatesService _exchangeRatesService;
 
         public static void Main(string[] args)
@@ -41,8 +39,8 @@ namespace BankAccountSimulator.ConsoleApp
                     {
                         try
                         {
-                            login = _consoleService.GetString("\nPodaj login: ");
-                            string password = _consoleService.GetString("\nPodaj hasło: ");
+                            login = _consoleService.GetString("\nEnter login: ");
+                            string password = _consoleService.GetString("\nEnter password: ");
 
                             userFound = _userService.Login(login, password);
                             break;
@@ -67,10 +65,10 @@ namespace BankAccountSimulator.ConsoleApp
                             {
                                 try
                                 {
-                                    string valueToDeposit = _consoleService.GetString("Podaj kwotę wpłaty: ");
-                                    string currency = _consoleService.GetString("Podaj walutę depozytu PLN/USD/EUR/GBP: ");
+                                    string valueToDeposit = _consoleService.GetString("Enter deposit amount: ");
+                                    string currency = _consoleService.GetString("Specify the currency PLN/USD/EUR/GBP: ");
                                     _userService.DepositMoney(login, valueToDeposit, currency);
-                                    _menuService.DisplayDepositStatus(valueToDeposit, "Pomyślnie wpłacono: ", currency);
+                                    _menuService.DisplayDepositStatus(valueToDeposit, "Succesfully deposited: ", currency);
                                 }
                                 catch (Exception e)
                                 {
@@ -82,11 +80,11 @@ namespace BankAccountSimulator.ConsoleApp
                             {
                                 try
                                 {
-                                    string valueToWithdraw = _consoleService.GetString("Podaj kwotę wYpłaty: ");
-                                    string currency = _consoleService.GetString("Podaj walutę depozytu PLN/USD/EUR/GBP: ");
+                                    string valueToWithdraw = _consoleService.GetString("Enter whithdraw amount ");
+                                    string currency = _consoleService.GetString("Specify the currency: PLN/USD/EUR/GBP: ");
 
                                     _userService.WithdrawMoney(login, valueToWithdraw, currency);
-                                    _menuService.DisplayWithdrawStatus(valueToWithdraw, "Pomyślnie wypłacono: ", currency);
+                                    _menuService.DisplayWithdrawStatus(valueToWithdraw, "Succesfully withdrawn: ", currency);
                                 }
                                 catch (Exception e)
                                 {
@@ -128,7 +126,7 @@ namespace BankAccountSimulator.ConsoleApp
                             {
                                 try
                                 {
-                                    string userCurrency = _consoleService.GetString("Podaj kod waluty na którą chcesz przewalutować swoje saldo PLN/USD/EUR/GBP :");
+                                    string userCurrency = _consoleService.GetString("Enter the currency code you wish to convert your balance to: PLN/USD/EUR/GBP :");
                                     string userAccountCurrencyType = _exchangeRatesService.GetUserActualCurrencyAccountType(login);
                                     _exchangeRatesService.SetUserBalance(login, userAccountCurrencyType, userCurrency);
                                 }
@@ -152,11 +150,11 @@ namespace BankAccountSimulator.ConsoleApp
                 {
                         try
                         {
-                            string userLogin = _consoleService.GetString("\nUtwórz login: ");
-                            string userPassword = _consoleService.GetString("\nUtwórz hasło: ");
+                            string userLogin = _consoleService.GetString("\nCreate login ");
+                            string userPassword = _consoleService.GetString("\nCreate password ");
 
                             bool registerStatus = _userService.AddNewUser(userLogin, userPassword);
-                            _menuService.DisplayRegisterStatus(registerStatus, "Pomyślnie zarejestrowano! ", "Wysąpił błąd przy rejstracji");
+                            _menuService.DisplayRegisterStatus(registerStatus, "Succesfully registerd! ", "An error occured");
                         }
 
                         catch (Exception e)
@@ -168,7 +166,7 @@ namespace BankAccountSimulator.ConsoleApp
                 }
                 else if (option == 3)
                 {
-                    Console.WriteLine("\nProgram zakończony.. ");
+                    Console.WriteLine("\nProgram finished.. ");
                     break;
                 }
             }
@@ -178,20 +176,14 @@ namespace BankAccountSimulator.ConsoleApp
         {
             _kernel.Bind<IMenuService>().To<MenuService>();
             _kernel.Bind<IConsoleService>().To<ConsoleService>();
-            _kernel.Bind<IRuleOfCorrectnesService>().To<RuleOfCorrectnesService>();
             _kernel.Bind<IUserService>().To<UserService>();
 
-            // Singleton to wzorzez projektowy, gdzie uniemożliwia się teworzenie więcej niż 1 instancji danej klasy
-            // Kontenery wstrzykiwania zależności mają to "wbudowane"
             _kernel.Bind<IUserRepository>().To<UserRepository>().InSingletonScope();
             _kernel.Bind<ICurrencyRepository>().To<CurrencyRepository>();
             _kernel.Bind<IExchangeRatesService>().To<ExchangeRatesService>();
 
-
-
             _menuService = _kernel.Get<IMenuService>();
             _consoleService = _kernel.Get<IConsoleService>();
-            _ruleOfCorrectnesProvider = _kernel.Get<IRuleOfCorrectnesService>();
 
             _userService = _kernel.Get<IUserService>();
             _exchangeRatesService = _kernel.Get<IExchangeRatesService>();

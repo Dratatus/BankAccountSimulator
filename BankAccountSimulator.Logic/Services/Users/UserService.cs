@@ -3,7 +3,6 @@ using BankAccountSimulator.Data.Models.Currencies;
 using BankAccountSimulator.Data.Repositories.Currencies;
 using BankAccountSimulator.Data.Repositories.Users;
 using BankAccountSimulator.Logic.Services.ExchangeRates;
-using BankAccountSimulator.Logic.Services.RulesOfCorrectnes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,6 @@ namespace BankAccountSimulator.Logic.Services.Users
     {
         private readonly ICurrencyRepository _currencyRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IRuleOfCorrectnesService _ruleOfCorrectnesService;
         private readonly IExchangeRatesService _exchangeRatesService;
         public UserService(IUserRepository userRepository, ICurrencyRepository currencyRepository, IExchangeRatesService exchangeRatesService)
         {
@@ -29,26 +27,26 @@ namespace BankAccountSimulator.Logic.Services.Users
 
             if (string.IsNullOrEmpty(username))
             {
-                throw new Exception("Nie podano loginu! ");
+                throw new Exception("Login not provided! ");
             }
 
             else if (string.IsNullOrEmpty(password))
             {
-                throw new Exception("Nie podano hasła! ");
+                throw new Exception("Password not provided! ");
             }
             else if (password.Length < 4)
             {
-                throw new Exception("Hasło musi mieć minimum 5 znaków! ");
+                throw new Exception("Password must be at least 5 characters! ");
             }
             else if (username.Length < 4)
             {
-                throw new Exception("Login musi mieć minimum 5 znaków! ");
+                throw new Exception("Username must be at least 5 characters! ");
             }
             else if (!userExist)
             {
-                throw new Exception("Nie znaleziono użytokownika ");
+                throw new Exception("User not found ");
             }
-            
+
 
             return true;
         }
@@ -67,7 +65,7 @@ namespace BankAccountSimulator.Logic.Services.Users
 
             if (user == null)
             {
-                throw new Exception($"Nie znaleziono użkownika o loginie {username}");
+                throw new Exception($"User with the login: {username} not found");
             }
 
             return user.Balance;
@@ -77,19 +75,19 @@ namespace BankAccountSimulator.Logic.Services.Users
         {
             if (login == null || login.Length <= 4)
             {
-                throw new Exception("nazwa użytkownika nie może mieć mniej niż 5 znaków! ");
+                throw new Exception("Username cannot be less than 5 characters! ");
             }
 
             if (password == null || password.Length <= 4)
             {
-                throw new Exception("hasło nie może mieć mniej niż 5 znaków! ");
+                throw new Exception("Password cannot be less than 5 characters! ");
             }
 
             bool userExists = _userRepository.UserExists(login);
 
             if (userExists)
             {
-                throw new Exception($"Użytkownik o loginie {login} już istnieje! ");
+                throw new Exception($"User with the login {login} already exists! ");
             }
 
             var user = new User
@@ -118,22 +116,22 @@ namespace BankAccountSimulator.Logic.Services.Users
 
             if (!isCorretType)
             {
-                throw new Exception("Niepoprawny typ danych! ");
+                throw new Exception("Invalid data type! ");
             }
             else if (isCorretType)
             {
                 if (convertedMoney <= 0)
                 {
-                    throw new Exception("Błędna kwota! ");
+                    throw new Exception("Incorrect amount! ");
                 }
             }
             if (!isCurrencyExist)
             {
-                throw new Exception("Błędna waluta!");
+                throw new Exception("Incorrect currency! ");
             }
             _exchangeRatesService.ConvertMoneyToBalance(login, accountCurrency, currency,operationType, convertedMoney);
 
-            AddAccountHistory(operationType, login, $"Dokonano wypłaty - kwota: {convertedMoney} {currency.ToUpper()}");
+            AddAccountHistory(operationType, login, $"-- Deposit -- amount: {convertedMoney} {currency.ToUpper()}");
 
             return loggedUser.Balance;
         }
@@ -150,26 +148,26 @@ namespace BankAccountSimulator.Logic.Services.Users
 
             if (!isCorretType)
             {
-                throw new Exception("Niepoprawny format kwoty!  ");
+                throw new Exception("Invalid amount format! ");
             }
             else if (isCorretType)
             {
                 if (convertedMoney <= 0)
                 {
-                    throw new Exception("Błędna kwota! ");
+                    throw new Exception("Incorrect amount! ");
                 }
                 else if (convertedMoney > loggedUser.Balance)
                 {
-                    throw new Exception("Nie posiadasz wystarczających środków na koncie!");
+                    throw new Exception("Insufficient funds in the account!");
                 }
             }
             if (!isCurrencyExist)
             {
-                throw new Exception("Błędna waluta! ");
+                throw new Exception("Incorrect currency! ");
             }
             _exchangeRatesService.ConvertMoneyToBalance(login, accountCurrency, currency, operationType, convertedMoney);
 
-            AddAccountHistory(operationType, login, $"Dokonano wypłaty - kwota: {convertedMoney} {currency.ToUpper()}");
+            AddAccountHistory(operationType, login, $"-- Withdraw -- amount: {convertedMoney} {currency.ToUpper()}");
 
             return loggedUser.Balance;
         }
@@ -217,7 +215,7 @@ namespace BankAccountSimulator.Logic.Services.Users
 
             if (isUserHvaeAccountHistory)
             {
-                throw new Exception("Historia konta jest pusta!");
+                throw new Exception("Account history is empty!");
             }
 
             return loggedUser.AccountHistory_.Operation;
