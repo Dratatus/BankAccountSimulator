@@ -3,6 +3,7 @@ Console project simulating Bank Account
 
 # Home
 - Upon launching the application, the user can choose from one of the three available options.
+
 ![main](https://github.com/BugLurker404/BankAccountSimulator/assets/92109490/02f8a758-d28b-41d7-8119-14f6e50bccb8)
 
 
